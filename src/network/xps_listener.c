@@ -68,7 +68,7 @@ xps_listener_t *xps_listener_create(xps_core_t *core, const char *host, u_int po
     // xps_loop_attach(epoll_fd, sock_fd, EPOLLIN);
     // stage 7 Replace old xps_loop_attach with modified one
 
-     xps_loop_attach(core->loop, sock_fd, EPOLLIN, listener, listener_connection_handler);
+     xps_loop_attach(core->loop, sock_fd, EPOLLIN, listener, listener_connection_handler, NULL, NULL);
 
     // Add listener to global listeners list
     vec_push(&core->listeners, listener);
@@ -118,7 +118,15 @@ void listener_connection_handler(void *ptr) {
         perror("Error message");
         return;
     }
-
+    if (make_socket_non_blocking(conn_sock_fd) != OK) {
+    logger(
+        LOG_ERROR,
+        "listener_connection_handler()",
+        "make_socket_non_blocking() failed"
+    );
+    close(conn_sock_fd);
+    return;
+   }
     // Creating connection instance
     xps_connection_t *client = xps_connection_create(listener->core, conn_sock_fd); // Will be implemented later
     if (client == NULL) {
