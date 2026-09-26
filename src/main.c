@@ -20,3 +20,12 @@ void sigint_handler(int signum) {
 
     exit(EXIT_SUCCESS);
 }
+
+/*
+
+cd ~/expserver-tester/backend
+docker compose -f docker-compose.dev.yaml up -d
+
+cd ~/expserver-tester/frontend
+npm run dev
+*/
